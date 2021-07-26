@@ -7,7 +7,8 @@
 
 ### Synopsis:
 
-- _ordered_.**choice**(objects=None) 
+- _ordered_.**choice**(objects=None)
+ 
    Return the object that maintains maximum order in the program (minimum entropy). Any exception increases entropy to infinity.
 
     `objects` is a list of objects to choose from. If `objects` is None then gc.get_objects() is assumed by default.
@@ -33,3 +34,16 @@ while data != 10: ordered.choice()()
 ```
 
 This will exit the program after running increase() 5 times. `choice` searches for the fastest way to exit the context in which it is located.
+
+## Work-in-progress methods
+
+### Method _`ordered`_.`relaxedchoice(objects=None)`
+
+Guaranteed to find an exit. Modifies the program if required.
+
+### Method _`ordered`_.`def(heap_in_out: List)`
+
+Defines a function from a list of input and output heaps. The more examples of heaps are supplied, the better is the function.
+
+
+
