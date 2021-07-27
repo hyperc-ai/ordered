@@ -15,11 +15,11 @@
 
 - _ordered_.**choice**(objects=None)
  
-   Choose and return the object that maintains maximum order in the program (minimum entropy). Any exception increases entropy to infinity.
+   Choose and return the object that maintains maximum order in the program (minimum entropy). Any exception increases entropy to infinity so choices leading to exceptions will be avoided.
 
     `objects` is a list of objects to choose from. If `objects` is `None` then `gc.get_objects()` is assumed by default.
 
-    Raises `SchedulingError` if it was not able to find an exit at all. It might require unexpected amount of resources, in which case additional training of the core model is required.
+    Raises `SchedulingError` if it was not able to find an exit at all. Large problems might require unexpected amount of resources in which case additional training of the core model is required.
 
     _**Warning:** not all Python features are currently supported and thus `ordered` might fail with internal exception. In this case a rewrite of user code is needed to remove the usage of unsupported features (such as I/O, lists and for loops.)_
     
@@ -132,7 +132,7 @@ with orderedcontext():
         assert run_function(f, point.x) == point.y
 # context exit guarantees that create_function() constructs a correct function to describe input
 
-# TODO: approximate function example
+# TODO: approximate function learning example
 ```
 
 ## Work-in-progress methods
