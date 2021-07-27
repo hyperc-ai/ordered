@@ -145,6 +145,10 @@ Guaranteed to find an exit. Modifies the program if required.
 
 Defines a function from a list of input and output heaps. The more examples of heaps are supplied, the better is the function.
 
+# Science behind `ordered`
+
+`ordered` is based on translating a Python program to [AI planning](https://en.wikipedia.org/wiki/Automated_planning_and_scheduling) problem and uses a customized [fast-downward](http://www.fast-downward.org/) as a backend. Additionally, we're implementing machine learning and pre-computed matrices on various levels to vastly improve performance on larger problems.
+
 # Credits
 
 Module `ordered` is developed and maintained by HyperC team, https://hyperc.com (CriticalHop Inc.)
