@@ -1,3 +1,11 @@
+[![alt text][1.1]][1]
+[![alt text][2.1]][2]
+
+[1.1]: http://i.imgur.com/tXSoThF.png (HyperC on twitter)
+[2.1]: http://i.imgur.com/P3YfQoD.png (HyperC on facebook)
+
+[1]: https://twitter.com/hyperc_ai
+[2]: https://www.facebook.com/HyperComputation/
 
 # Python module `ordered`
 
