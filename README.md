@@ -137,5 +137,7 @@ Guaranteed to find an exit. Modifies the program if required.
 
 Defines a function from a list of input and output heaps. The more examples of heaps are supplied, the better is the function.
 
+# Credits
 
+Module `ordered` is developed and maintained by HyperC team, https://hyperc.com (CriticalHop Inc.)
 
