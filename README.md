@@ -11,6 +11,31 @@
 
 `ordered` module is the opposite to `random` - it maintains order in the program.
 
+
+```python
+import random
+data = 5
+def increase():
+    data += 1
+def decrease():
+    data -= 1
+while data != 10: 
+    random.choice([increase, decrease])()  # takes long time to exit
+```
+
+```python
+import ordered
+data = 5
+def increase():
+    data += 1
+def decrease():
+    data -= 1
+while data != 10: 
+   ordered.choice([increase, decrease])()  # exits immediately
+```
+
+# Usage
+
 ## _`ordered`_.`choice()` method
 
 - _ordered_.**choice**(objects=None)
