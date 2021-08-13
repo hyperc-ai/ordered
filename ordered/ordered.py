@@ -1,3 +1,8 @@
+__author__ = "Andrew Gree"
+__copyright__ = "CriticalHop Inc."
+__license__ = "MIT"
+
+
 from contextlib import contextmanager
 import sys
 import tempfile
@@ -15,7 +20,6 @@ def _stub_rewrite_while_choice(code, frame):
     
     Currently `while ..` loop only serves as a "mental model" around HyperC
     """
-    for ln in code
     for ln in range(len(code)):
         print(code[ln], code[ln+1])
         l = code[ln]
@@ -129,9 +133,9 @@ def _trace_once(frame, event, arg):
     #print(event, frame, frame.f_lineno, frame.f_code.co_name)
     if not frame.f_code.co_name in ("__enter__", "__exit__", "orderedcontext"):
         code, lineno, choiceargs = _scan_to_exitcontext(frame)
-        # print("Code:", _cached_code(frame.f_code.co_filename)[frame.f_lineno-1])
-        # print("Full code:\n", code)
-        # print("Would jump here to lineno", lineno + 1)
+        print("Code:", _cached_code(frame.f_code.co_filename)[frame.f_lineno-1])
+        print("Full code:\n", code)
+        print("Would jump here to lineno", lineno + 1)
         frame.f_lineno = lineno + 1  # jump to after ordered context
         ctx_frame = frame
         sys.settrace(None)
