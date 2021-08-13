@@ -15,11 +15,16 @@ def _stub_rewrite_while_choice(code, frame):
     
     Currently `while ..` loop only serves as a "mental model" around HyperC
     """
+    for ln in code
     for ln in range(len(code)):
+        print(code[ln], code[ln+1])
         l = code[ln]
         if (l.strip().startswith("while") and 
-            (code[ln+1].strip().startswith("ordered.choice") or
-             code[ln+1].strip().startswith("choice"))):
+            (
+                code[ln+1].strip().startswith("ordered.choice") or
+                code[ln+1].strip().startswith("random.choice") or
+                code[ln+1].strip().startswith("choice")
+             )):
              # TODO: strip out comments!
             if "#" in code[ln]: raise ValueError("Comments not supported on while... line") 
             code[ln] = l.replace("while", "assert not (").replace(":", "") + ")"
@@ -51,10 +56,12 @@ def _stub_rewrite_while_choice(code, frame):
     stub_globals["choice"] = choice
     stub_globals["choices"] = choice
     stub_globals["ordered"] = ordered
+    stub_globals["random"] = ordered
     stub_globals["gc"] = gc 
     stub_locals["choice"] = choice
     stub_locals["choices"] = choice
     stub_locals["ordered"] = ordered
+    stub_locals["random"] = ordered
     stub_locals["gc"] = gc 
     eval(choiceline, stub_globals, stub_locals)
 

@@ -13,25 +13,30 @@
 
 
 ```python
-import random
-data = 5
+import random 
+x = 5
 def increase():
-    data += 1
+    global x
+    x += 7
 def decrease():
-    data -= 1
-while data != 10: 
+    global x
+    x -= 2
+while x != 22:  
     random.choice([increase, decrease])()  # takes long time to exit
 ```
 
 ```python
-import ordered
-data = 5
+import random, ordered
+x = 5
 def increase():
-    data += 1
+    global x
+    x += 7
 def decrease():
-    data -= 1
-while data != 10: 
-   ordered.choice([increase, decrease])()  # exits immediately
+    global x
+    x -= 2
+with ordered.orderedcontext():  # enter entropy-controlled context
+    while x != 22: 
+        random.choice([increase, decrease])()  # exits immediately
 ```
 
 # Usage
