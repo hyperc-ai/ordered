@@ -77,10 +77,18 @@ def _stub_rewrite_while_choice(code, frame):
         raise ValueError("Unsupported ordered.choice invocation")
     choiceargs_parsed = {}
     if choiceargs[0] and choiceargs[1]:
-        choiceargs_parsed['functions'] = {f.__name__:f for f in filter(lambda x: isinstance(x, types.FunctionType), choiceargs[0][0])}
+        choiceargs_parsed['functions'] = {
+            f.__name__:f for f in filter(
+                lambda x: 
+                isinstance(x, types.FunctionType) or isinstance(x, type), 
+                choiceargs[0][0])}
         choiceargs_parsed['objects'] = choiceargs[1][0]
     elif choiceargs[0] and not choiceargs[1]:
-        choiceargs_parsed['functions'] = {f.__name__:f for f in filter(lambda x: isinstance(x, types.FunctionType), choiceargs[0][0])}
+        choiceargs_parsed['functions'] = {
+            f.__name__:f for f in filter(
+                lambda x: 
+                isinstance(x, types.FunctionType) or isinstance(x, type), 
+                choiceargs[0][0])}
         choiceargs_parsed['objects'] = "GC_OBJECTS"
     elif not choiceargs[0] and choiceargs[1]:
         choiceargs_parsed['functions'] = frame.f_locals  # FIXME: use collected by trace
@@ -133,9 +141,9 @@ def _trace_once(frame, event, arg):
     #print(event, frame, frame.f_lineno, frame.f_code.co_name)
     if not frame.f_code.co_name in ("__enter__", "__exit__", "orderedcontext"):
         code, lineno, choiceargs = _scan_to_exitcontext(frame)
-        print("Code:", _cached_code(frame.f_code.co_filename)[frame.f_lineno-1])
-        print("Full code:\n", code)
-        print("Would jump here to lineno", lineno + 1)
+        # print("Code:", _cached_code(frame.f_code.co_filename)[frame.f_lineno-1])
+        # print("Full code:\n", code)
+        # print("Would jump here to lineno", lineno + 1)
         frame.f_lineno = lineno + 1  # jump to after ordered context
         ctx_frame = frame
         sys.settrace(None)
