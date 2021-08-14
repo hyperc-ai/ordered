@@ -21,9 +21,12 @@ def increase():
 def decrease():
     global x
     x -= 2
+
 while x != 22:  
-    random.choice([increase, decrease])()  # takes long time to exit
+    random.choice([increase, decrease])()  
+    # takes long time to exit ...
 ```
+vs.
 
 ```python
 import random, ordered
@@ -34,53 +37,62 @@ def increase():
 def decrease():
     global x
     x -= 2
-with ordered.orderedcontext():  # enter entropy-controlled context
+
+with ordered.orderedcontext(): # entropy-controlled context
     while x != 22: 
-        random.choice([increase, decrease])()  # exits immediately
+        random.choice([increase, decrease])()  
+    # exits immediately with correct result
 ```
 
 # Usage
+
+## Entropy Context Objects
+
+```python
+# ... normal python code
+with ordered.orderedcontext():  
+    # ... entropy-controlled context
+# ... normal python code
+```
+
+Ordered contexts are environments of controlled entropy. Contexts allow you to control which portions of the program will be guaranteed to exit with minimum state-changing steps. Raising any exceptions is also avoided by providing the correct "anti-random" `choice()` results. 
+
+- _ordered_.**orderedcontext**()
+
+  Return a context manager and enter the context. `SchedulingError` will be raised if exit is not possible.
+  
+  Inside ordered context functions `random.choice` and `ordered.choice` are equivalent and no randomness is possible. If `choice()` is called without parameters then `gc.get_objects()` (all objects in Python heap) is considered by default.
+
+  Optional returned context object allows to set parameters and limits such as `timeout` and `max_states`.
+  
+    _**Warning:** not all Python features are currently supported and thus `ordered` might fail with internal exception. In this case a rewrite of user code is needed to remove the usage of unsupported features (such as I/O, lists and for loops.)_
+    
+    _**Warning:** `ordered` requires all entropy-controlled code to be type-hinted._
+
+```python
+# ...
+def decrease():
+    global x
+    assert x > 25  # when run inside context this excludes cases when x <= 25
+                   # thus increasing amount of overall steps needed to complete
+    x -= 2
+# ...
+with ordered.orderedcontext(): # entropy-controlled context
+    while x < 21:  # exit if x >= 21
+        random.choice([increase, decrease])()  
+    assert x < 23  # only x == 21 or 22 matches overall
+```
 
 ## _`ordered`_.`choice()` method
 
 - _ordered_.**choice**(objects=None)
  
    Choose and return the object that maintains maximum order in the program (minimum entropy). Any exception increases entropy to infinity so choices leading to exceptions will be avoided.
+   Inside the entropy controlled context, `random.choice` is equivalent to `ordered.choice`.
 
     `objects` is a list of objects to choose from. If `objects` is `None` then `gc.get_objects()` is assumed by default.
 
-    Raises `SchedulingError` if it was not able to find an exit at all. Large problems might require unexpected amount of resources in which case additional training of the core model is required.
-
-    _**Warning:** not all Python features are currently supported and thus `ordered` might fail with internal exception. In this case a rewrite of user code is needed to remove the usage of unsupported features (such as I/O, lists and for loops.)_
-    
-    _**Warning:** `ordered` requires all entropy-controlled code to be type-hinted._
-
-## Entropy Context Objects
-
-Contexts are environments of controlled entropy. Entropy contexts allow you to control which portions of the program will be guaranteed to exit with minimum state-changing steps. By default, the entire program till the end is considered to be a controlled context.
-
-- _ordered_.**orderedcontext**()
-
-  Return a context manager that will set the current context for the active thread to a copy of ctx on entry to the with-statement and restore the previous context when exiting the with-statement. If no context is specified, a copy of the current context is used. `SchedulingError` will be raised if exit is not possible.
-  
-  Context allows to set parameters and limits such as `timeout` and `max_memory`.
-  
-  Inside a context only objects defined within this context are considered by `ordered.choice()` by default instead of `gc.get_objectx()`.
-
-  For example, the following code executes a portion of the program in an entropy-controlled context:
-  
-```python
-import ordered
-step_count = 0
-with ordered.orderedcontext() as ctx:
-    ctx.timeout = 10  # 10 seconds max time to find a solution
-    x = 0
-    while ordered.choice([True, False]):
-        x = ordered.choice([lambda: x + 9, lambda: x - 1])()
-        step_count += 1
-    assert x == 15
-open("result.txt", "w+").write(f"x={x}, steps={step_count}")  # x equals 15
-```
+    _**Warning:** current implementation of `while ... ordered` loop is hard-coded to the form shown in examples. `while` loops with other statements than a single-line `choice()` are not supported. Add your code to other parts of context and/or functions and methods in your program_
 
 ## Examples:
 
@@ -88,19 +100,37 @@ open("result.txt", "w+").write(f"x={x}, steps={step_count}")  # x equals 15
 
 ```python
 import ordered
+import gc
 
-data = 5
+class MyVars:
+    x: int
+    def __init__(self) -> None:
+        self.x = 0
 
-def increase():
-    data += 1
+m = MyVars()
+m.x = 5
+steps = 0
 
-def decrease():
-    data -= 1
+def plus_x(m: MyVars):
+    m.x += 3
+    global steps
+    steps += 1
 
-while data != 10: ordered.choice()()
+def minus_x(m: MyVars):
+    m.x -= 2
+    global steps
+    steps += 1
+
+
+with ordered.orderedcontext():
+    # exit ordered context without exceptions with minimum steps
+    while m.x != 12:  
+        ordered.choice([plus_x, minus_x])(ordered.choice(gc.get_objects()))  
+
+print("Steps:", steps)
 ```
 
-This will exit the program after running increase() 5 times. `choice` searches for the fastest way to exit the context in which it is located.
+This will exit the program after running increase() 5 times. `choice` knows the fastest way to exit the context in which it is located.
 
 ### Pouring problem
 
