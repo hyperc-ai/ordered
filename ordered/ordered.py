@@ -21,7 +21,11 @@ def _get_indent(l):
 
 def _expand_class(local_dict):
     for x in local_dict.copy().values():
-        if not type(x) in vars(builtins).values() and not isinstance(x, types.FunctionType):
+        if (not type(x) in vars(builtins).values()
+            and not x is None 
+            and not isinstance(x, types.FunctionType)
+            and not isinstance(x, types.ModuleType)):
+            if x.__class__.__qualname__ in ("SourceFileLoader", "ModuleSpec"): continue
             local_dict[f"{repr(x.__class__)}"] = x.__class__
     return local_dict
 
