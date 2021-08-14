@@ -153,8 +153,7 @@ A classic bottle pouring puzzle. You are in the possession of two bottles, one w
 
 ```python
 from ordered import orderedcontext, choice
-with orderedcontext():
-  class Bottle:
+class Bottle:
     volume: int
     fill: int
     def __init__(self, volume: int):
@@ -166,23 +165,26 @@ with orderedcontext():
     def pour_out(self, bottle: "Bottle"):
         assert self != bottle
         can_fit = bottle.volume - bottle.fill
+        sf = self.fill
+        bf = bottle.fill
         if self.fill <= can_fit:
             bottle.fill += self.fill
             self.fill = 0
             assert self.fill == 0
-            assert bottle.fill == bottle.fill + self.fill
+            assert bottle.fill == bf + sf
         else:
             bottle.fill += can_fit
             self.fill -= can_fit
             assert bottle.fill == bottle.volume
-            assert self.fill == self.fill - can_fit
+            assert self.fill == sf - can_fit
     def empty(self):
         self.fill = 0
-        assert self.fill == 0
-  b1 = Bottle(3)
-  b2 = Bottle(5)
+b1 = Bottle(3)
+b2 = Bottle(5)
+with orderedcontext():
   while b2.fill != 4: 
-      choice([Bottle])(choice([b1,b2]))
+      choice([Bottle])()
+pass
 ```
 
 _**NOTE:** Be careful with importing from a module into global namespace and using `choice()()` without parameters in global scope. Current implementation load all global objects including the `orderedcontext` and `choice` and cause an error_
