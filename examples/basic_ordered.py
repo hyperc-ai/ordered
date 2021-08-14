@@ -1,4 +1,3 @@
-# TODO: create an OO version
 import sys
 sys.path.append(".")
 
