@@ -20,12 +20,17 @@ def _get_indent(l):
     return len(l) - len(l.lstrip())
 
 def _expand_class(local_dict):
-    for x in local_dict.copy().values():
+    # print("Expanding:", list(local_dict.keys()))
+    for name, x in local_dict.copy().items():
+        if name.startswith("_"):
+            del local_dict[name]
         if (not type(x) in vars(builtins).values()
             and not x is None 
             and not isinstance(x, types.FunctionType)
             and not isinstance(x, types.ModuleType)):
             if x.__class__.__qualname__ in ("SourceFileLoader", "ModuleSpec"): continue
+            if  x.__class__.__name__.startswith("_"): continue
+            # print("Expanding to class:", repr(x.__class__))
             local_dict[f"{repr(x.__class__)}"] = x.__class__
     return local_dict
 
@@ -114,7 +119,7 @@ def _stub_rewrite_while_choice(code, frame):
     else: 
         raise ValueError("Unsupported choice configuration")
 
-    #print("Choice args parsed:", choiceargs_parsed)
+    # print("Choice args parsed:", list(choiceargs_parsed['functions'].keys()))
 
     return code, choiceargs_parsed
 
