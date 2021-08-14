@@ -21,3 +21,4 @@ finally:
     del version, PackageNotFoundError
 
 from ordered.ordered import orderedcontext, choice, choices
+from hyperc import side_effect
