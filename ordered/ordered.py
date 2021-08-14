@@ -3,17 +3,29 @@ __copyright__ = "CriticalHop Inc."
 __license__ = "MIT"
 
 
+import builtins
 from contextlib import contextmanager
 import sys
 import tempfile
 import types
+import inspect
 import hyperc
+
 
 _file_cache = {}
 _dirty_is_context = False 
 
+
 def _get_indent(l):
     return len(l) - len(l.lstrip())
+
+def _expand_class(local_dict):
+    for x in local_dict.copy().values():
+        if not type(x) in vars(builtins).values() and not isinstance(x, types.FunctionType):
+            local_dict[f"{repr(x.__class__)}"] = x.__class__
+    return local_dict
+
+
 
 def _stub_rewrite_while_choice(code, frame):
     """A stub to rewrite while ... choice to assert ...
@@ -21,7 +33,6 @@ def _stub_rewrite_while_choice(code, frame):
     Currently `while ..` loop only serves as a "mental model" around HyperC
     """
     for ln in range(len(code)):
-        print(code[ln], code[ln+1])
         l = code[ln]
         if (l.strip().startswith("while") and 
             (
@@ -80,27 +91,26 @@ def _stub_rewrite_while_choice(code, frame):
         choiceargs_parsed['functions'] = {
             f.__name__:f for f in filter(
                 lambda x: 
-                isinstance(x, types.FunctionType) or isinstance(x, type), 
+                isinstance(x, types.FunctionType) or inspect.isclass(x), 
                 choiceargs[0][0])}
         choiceargs_parsed['objects'] = choiceargs[1][0]
     elif choiceargs[0] and not choiceargs[1]:
         choiceargs_parsed['functions'] = {
             f.__name__:f for f in filter(
                 lambda x: 
-                isinstance(x, types.FunctionType) or isinstance(x, type), 
+                isinstance(x, types.FunctionType) or inspect.isclass(x), 
                 choiceargs[0][0])}
         choiceargs_parsed['objects'] = "GC_OBJECTS"
     elif not choiceargs[0] and choiceargs[1]:
-        choiceargs_parsed['functions'] = frame.f_locals  # FIXME: use collected by trace
+        choiceargs_parsed['functions'] = _expand_class(frame.f_locals)  # FIXME: use collected by trace
         choiceargs_parsed['objects'] = choiceargs[1][0]
     elif not choiceargs[0] and not choiceargs[1]:
-        choiceargs_parsed['functions'] = frame.f_locals  # FIXME: use collected by trace
+        choiceargs_parsed['functions'] = _expand_class(frame.f_locals)  # FIXME: use collected by trace
         choiceargs_parsed['objects'] = "GC_OBJECTS"
     else: 
         raise ValueError("Unsupported choice configuration")
 
     #print("Choice args parsed:", choiceargs_parsed)
-    #print("Choice args:", choiceargs)
 
     return code, choiceargs_parsed
 
@@ -138,12 +148,8 @@ def _trace_once(frame, event, arg):
     # TODO: if line is function definition - run it normally
     #       and store its name
     #       to support locally-defined functions
-    #print(event, frame, frame.f_lineno, frame.f_code.co_name)
     if not frame.f_code.co_name in ("__enter__", "__exit__", "orderedcontext"):
         code, lineno, choiceargs = _scan_to_exitcontext(frame)
-        # print("Code:", _cached_code(frame.f_code.co_filename)[frame.f_lineno-1])
-        # print("Full code:\n", code)
-        # print("Would jump here to lineno", lineno + 1)
         frame.f_lineno = lineno + 1  # jump to after ordered context
         ctx_frame = frame
         sys.settrace(None)
@@ -152,14 +158,11 @@ def _trace_once(frame, event, arg):
             frame = frame.f_back
         # Compiling code happens here as there is no way to return to context manager
         full_function_code = f"def ordered_ctx_goal():\n    "+code
-        #print("Full funciton code:")
-        #print(full_function_code)
         with tempfile.NamedTemporaryFile() as fp:
             fp.write(code.encode("utf-8"))
             f_code = compile(full_function_code, fp.name, 'exec')
             exec(f_code, ctx_frame.f_locals)
             func = ctx_frame.f_locals["ordered_ctx_goal"]
-            #print(ctx_frame.f_locals)
             hyperc.solve(func, choiceargs["functions"])
         global _dirty_is_context
         _dirty_is_context = False
@@ -169,7 +172,6 @@ def _trace_once(frame, event, arg):
 @contextmanager
 def orderedcontext(*args, **kwds):
     "Partial context manager."
-    #print("Enter context!")
     global _dirty_is_context
     _dirty_is_context = True
     sys.settrace(_trace_once)
