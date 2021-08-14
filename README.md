@@ -94,43 +94,58 @@ with ordered.orderedcontext(): # entropy-controlled context
 
     _**Warning:** current implementation of `while ... ordered` loop is hard-coded to the form shown in examples. `while` loops with other statements than a single-line `choice()` are not supported. Add your code to other parts of context and/or functions and methods in your program_
 
+
+## _`ordered`_.`side_effect(lambda: <code>)` method
+
+- _ordered_.**side_effect**(lamdba=[lambda function])
+
+    Execute the supplied lambda function as a side-effect avoiding the compilation and subsequent effect analysis by `ordered`. This is useful when I/O is easier schdeuled right within the entropy-controlled part of the program or when you know that the code to be executed has no useful effect on the state of the problem of interest.
+
+    ```python
+    def move(t: Truck, l: Location):
+        "Move truck to any adjacent location"
+        assert l in t.location.adjacent
+        t.locaiton = l
+        t.distance += 1
+        side_effect(lambda: print(f"This {__name__} code can have any Python construct and is not analysed. Current value is {t.distance}"))
+    ```
+
 ## Examples:
 
-### Primitive increase
+### Object Oriented Code
+
+Preferred way of implementing software models with `ordered` is object-oriented:
 
 ```python
 import ordered
-import gc
 
 class MyVars:
     x: int
+    steps: int
     def __init__(self) -> None:
         self.x = 0
+        self.steps = 0
+
+    def plus_x(self):
+        self.x += 3
+        self.count_steps()
+
+    def minus_x(self):
+        self.x -= 2
+        self.count_steps()
+    
+    def count_steps(self):
+        self.steps += 1
 
 m = MyVars()
 m.x = 5
-steps = 0
-
-def plus_x(m: MyVars):
-    m.x += 3
-    global steps
-    steps += 1
-
-def minus_x(m: MyVars):
-    m.x -= 2
-    global steps
-    steps += 1
-
-
 with ordered.orderedcontext():
-    # exit ordered context without exceptions with minimum steps
     while m.x != 12:  
-        ordered.choice([plus_x, minus_x])(ordered.choice(gc.get_objects()))  
+        ordered.choice()()  
 
 print("Steps:", steps)
 ```
 
-This will exit the program after running increase() 5 times. `choice` knows the fastest way to exit the context in which it is located.
 
 ### Pouring problem
 
@@ -167,10 +182,14 @@ with orderedcontext():
   b1 = Bottle(3)
   b2 = Bottle(5)
   while b2.fill != 4: 
-      choice([Bottle.fill_in, Bottle.pour_out, Bottle.empty])(choice([b1,b2]))
+      choice([Bottle])(choice([b1,b2]))
 ```
 
+_**NOTE:** Be careful with importing from a module into global namespace and using `choice()()` without parameters in global scope. Current implementation load all global objects including the `orderedcontext` and `choice` and cause an error_
+
 ### Learning a function
+
+`ordered` can be used 
 
 ```python
 from ordered import choice, orderedcontext
@@ -197,13 +216,45 @@ with orderedcontext():
 
 ## Work-in-progress methods
 
-### Method _`ordered`_.`relaxedchoice(objects=None)`
+### _`ordered`_.`relaxedcontext()`
 
 Guaranteed to find an exit. Modifies the program if required.
 
 ### Method _`ordered`_.`def(heap_in_out: List)`
 
 Defines a function from a list of input and output heaps. The more examples of heaps are supplied, the better is the function.
+
+# Status
+
+Although the system is in use by several industry organizations, `ordered` is under heavy development. Expect rapid changes in language support, performance and bugs. 
+
+# Limitations
+
+## Python Language
+
+Overall we have a relatively complete support of 'basic' use of object-oriented programming style. However, there are some hard limitaions and work-in-progress items that are yet to be documented.
+
+Try to avoid multiline code as we have several places where line continuation may break during compilation.
+
+Built-ins support is minimal. No I/O can be executed except for in explicit `side_effect()` calls. 
+
+None of the "ordered data structures" are supported: this includes `list`, `dict` and `tuple`. Use `set` or create your own data structures based on objects and classes.
+
+Loops are not supported, including `while` and `for` besides the main `while..choice()` loop as described above - define your problem by creating functions that can be iteratively called by `while.. choice()` to overcome this.
+
+Support of missing features is a current work in progress.
+
+## Integer Math
+
+Math implementation is simple and works up to count 20-50 depedning on available resources. Future development includes switching to register-based math and monotonic-increase heuristics to support any numbers. 
+
+## Symbolic Execution Performance
+
+Current implementaion of Python code compilation is naive and doesn't scale well. The simpler your code, the faster it will compile. Future development includes implementing smarter symboic execution heuristics, pre-calculated database and statistical methods.
+
+## Model Universality
+
+Current model can efficiently handle a limited set of problem classes and might require significantly more resources than would be needed with a more complete model. HyperC team provides more complete models for specific industry per request. Future development includes adding a universal pruning based on statistical methods as amount of data available to HyperC team grows.
 
 # Science behind `ordered`
 
@@ -213,3 +264,4 @@ Defines a function from a list of input and output heaps. The more examples of h
 
 Module `ordered` is developed and maintained by HyperC team, https://hyperc.com (CriticalHop Inc.)
 
+For any questions and inquries please contact Andrew Gree, <andrewg@hyperc.com>.
