@@ -46,6 +46,12 @@ with ordered.orderedcontext(): # entropy-controlled context
 
 # Usage
 
+Just run your program. `ordered` has a significant "warm-up" time which includes several stages of logic order lowering.
+
+```
+pip install ordered
+```
+
 ## Entropy Context Objects
 
 ```python
@@ -267,3 +273,7 @@ Current model can efficiently handle a limited set of problem classes and might 
 Module `ordered` is developed and maintained by HyperC team, https://hyperc.com (CriticalHop Inc.)
 
 For any questions and inquries please contact Andrew Gree, <andrewg@hyperc.com>.
+
+# Investor Relations
+
+HyperC is fundraising! Please contact at <andrewg@hyperc.com>.
