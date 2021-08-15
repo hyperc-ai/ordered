@@ -89,7 +89,7 @@ with ordered.orderedcontext(): # entropy-controlled context
     assert x < 23  # only x == 21 or 22 matches overall
 ```
 
-## _`ordered`_.`choice()` method
+## _`ordered`_.`choice()` 
 
 - _ordered_.**choice**(objects=None)
  
@@ -101,7 +101,7 @@ with ordered.orderedcontext(): # entropy-controlled context
     _**Warning:** current implementation of `while ... ordered` loop is hard-coded to the form shown in examples. `while` loops with other statements than a single-line `choice()` are not supported. Add your code to other parts of context and/or functions and methods in your program_
 
 
-## _`ordered`_.`side_effect(lambda: <code>)` method
+## _`ordered`_.`side_effect(lambda: <code>)` 
 
 - _ordered_.**side_effect**(lamdba=[lambda function])
 
@@ -222,7 +222,7 @@ with orderedcontext():
 # TODO: approximate function learning example
 ```
 
-## Work-in-progress methods
+## Work-in-progress functions 
 
 ### _`ordered`_.`relaxedcontext()`
 
