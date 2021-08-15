@@ -54,14 +54,14 @@ pip install ordered
 
 ## Entropy Context Objects
 
+Ordered contexts are environments of controlled entropy. Contexts allow you to control which portions of the program will be guaranteed to exit with minimum state-changing steps. Raising any exceptions is also avoided by providing the correct "anti-random" `choice()` results. 
+
 ```python
 # ... normal python code
 with ordered.orderedcontext():  
-    # ... entropy-controlled context
+    # ... entropy-controlled context, guaranteed to exit without exceptions
 # ... normal python code
 ```
-
-Ordered contexts are environments of controlled entropy. Contexts allow you to control which portions of the program will be guaranteed to exit with minimum state-changing steps. Raising any exceptions is also avoided by providing the correct "anti-random" `choice()` results. 
 
 - _ordered_.**orderedcontext**()
 
