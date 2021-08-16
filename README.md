@@ -1,11 +1,11 @@
-[![alt text][1.1]][1]
-[![alt text][2.1]][2]
+[![Build Status](https://travis-ci.com/hyperc-ai/ordered.svg?branch=main)](https://travis-ci.com/hyperc-ai/ordered)
+[![PyPI version](https://badge.fury.io/py/ordered.svg)](https://badge.fury.io/py/ordered)
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+[![PyPI status](https://img.shields.io/pypi/status/ordered.svg)](https://pypi.python.org/pypi/ordered/)
 
-[1.1]: http://i.imgur.com/tXSoThF.png (HyperC on twitter)
-[2.1]: http://i.imgur.com/P3YfQoD.png (HyperC on facebook)
+![Twitter Follow](https://img.shields.io/twitter/follow/hyperc_ai?style=social)
+![Twitter URL](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fhyperc-ai%2Fordered)
 
-[1]: https://twitter.com/hyperc_ai
-[2]: https://www.facebook.com/HyperComputation/
 
 # Python module `ordered`
 
@@ -46,11 +46,15 @@ with ordered.orderedcontext(): # entropy-controlled context
 
 # Usage
 
-Just run your program. `ordered` has a significant "warm-up" time which includes several stages of logic order lowering.
+`ordered` is a Python 3.8+ module. Usecases include automated decisionmaking, manufacturing control, robotics, automated design, automated programming and others. 
+
+You describe the problem in Python language formalism in form of functions and methods that model some business process - these methods modify the state of the world. By defining the exit criteria of entropy-controlled context you ask the system to reach the goal state by applying available functions and methods as many times as needed. `ordered` will automatically decide which objects available in memory to use with each call.
 
 ```
 pip install ordered
 ```
+
+Having pypy3 installed on the system is recommended for performance and will be automatically detected and used.
 
 ## Entropy Context Objects
 
@@ -107,7 +111,11 @@ with ordered.orderedcontext(): # entropy-controlled context
 
     Execute the supplied lambda function as a side-effect avoiding the compilation and subsequent effect analysis by `ordered`. This is useful when I/O is easier schdeuled right within the entropy-controlled part of the program or when you know that the code to be executed has no useful effect on the state of the problem of interest.
 
+    side_effect may only be used when importred into global namespace using `from ordered import side_effect`    
+
     ```python
+    from ordered import side_effect
+
     def move(t: Truck, l: Location):
         "Move truck to any adjacent location"
         assert l in t.location.adjacent
