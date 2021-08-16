@@ -18,7 +18,7 @@ def run_inc():
             ordered.choice()()
     pass  # required due to current Python limitation
 
-pytest.mark.skip("Fix requested at https://github.com/hyperc-ai/ordered/issues/2")
+@pytest.mark.skip("Fix requested at https://github.com/hyperc-ai/ordered/issues/2")
 def test_global_access():
     "Setting the breakpoint to line 13 should work"
     run_inc()
