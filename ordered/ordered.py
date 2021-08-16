@@ -159,7 +159,15 @@ def _trace_once(frame, event, arg):
     #       to support locally-defined functions
     if not frame.f_code.co_name in ("__enter__", "__exit__", "orderedcontext"):
         code, lineno, choiceargs = _scan_to_exitcontext(frame)
-        frame.f_lineno = lineno + 1  # jump to after ordered context
+        try:
+            frame.f_lineno = lineno + 1  # jump to after ordered context
+        except ValueError as e:
+            if "comes after" in str(e):
+                raise RuntimeError(f"Orderedcontext abruptly ends. Please add `pass` statement on line {lineno + 1} of {frame.f_code.co_filename}:{lineno + 1}")
+            import traceback
+            traceback.print_exc()
+            print(f"Likely the orderedcontext abruptly ends. Please add `pass` statement on line {lineno + 1} of {frame.f_code.co_filename}:{lineno + 1}")
+            raise e
         ctx_frame = frame
         sys.settrace(None)
         while frame:
