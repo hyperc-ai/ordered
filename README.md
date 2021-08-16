@@ -42,6 +42,7 @@ with ordered.orderedcontext(): # entropy-controlled context
     while x != 22: 
         random.choice([increase, decrease])()  
     # exits immediately with correct result
+pass 
 ```
 
 # Usage
