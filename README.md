@@ -106,7 +106,7 @@ with ordered.orderedcontext(): # entropy-controlled context
 - _ordered_.**choice**(objects=None)
  
    Choose and return the object that maintains maximum order in the program (minimum entropy). Any exception increases entropy to infinity so choices leading to exceptions will be avoided.
-   Inside the entropy controlled context, `random.choice` is equivalent to `ordered.choice`.
+   Inside the entropy controlled context, `random.choice` is equivalent to `ordered.choice` (and also `random.choices` in the sense that it may return any amount of parameters when used as argument-generator in `choice(*choice())`).
 
     `objects` is a list of objects to choose from. If `objects` is `None` then `gc.get_objects()` is assumed by default.
 
