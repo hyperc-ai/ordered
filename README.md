@@ -51,8 +51,15 @@ pass
 
 You describe the problem in Python language formalism in form of functions and methods that model some business process - these methods modify the state of the world. By defining the exit criteria of entropy-controlled context you ask the system to reach the goal state by applying available functions and methods as many times as needed. `ordered` will automatically decide which objects available in memory to use with each call.
 
-```
-pip install ordered
+## Requirements
+
+- Linux (tested on Ubuntu 20.04+)
+- Python 3.8 in virtualenv
+- Recommended: PyPy compatible with Python 3.7+, installed globally.
+
+```bash
+# In Python3.8 virtualenv on Linux:
+$ pip install ordered
 ```
 
 Having pypy3 installed on the system is recommended for performance and will be automatically detected and used.
