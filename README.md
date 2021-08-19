@@ -284,12 +284,13 @@ Current model can efficiently handle a limited set of problem classes and might 
 # Science behind `ordered`
 
 `ordered` is based on translating a Python program to [AI planning](https://en.wikipedia.org/wiki/Automated_planning_and_scheduling) problem and uses a customized [fast-downward](http://www.fast-downward.org/) as a backend. Additionally, we're implementing machine learning and pre-computed matrices on various levels to vastly improve performance on larger problems.
+# Contributing
 
-# Credits
+For any questions and inquries please feel free contact Andrew Gree, <andrewg@hyperc.com>.
 
-Module `ordered` is developed and maintained by HyperC team, https://hyperc.com (CriticalHop Inc.)
+# Support
 
-For any questions and inquries please contact Andrew Gree, <andrewg@hyperc.com>.
+Module `ordered` is maintained by HyperC team, https://hyperc.com (CriticalHop Inc.) and is implemented in multiple production envorinments.
 
 # Investor Relations
 
