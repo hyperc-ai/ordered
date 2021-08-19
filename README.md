@@ -45,11 +45,15 @@ with ordered.orderedcontext(): # entropy-controlled context
 pass 
 ```
 
+Ordered contexts are environments of controlled entropy. Contexts allow you to control which portions of the program will be guaranteed to exit with minimum state-changing steps. Raising any exceptions is also avoided by providing the correct "anti-random" `choice()` results. 
+
 # Usage
 
-`ordered` is a Python 3.8+ module. Usecases include automated decisionmaking, manufacturing control, robotics, automated design, automated programming and others. 
+`ordered` is a Python 3.8+ module. Use cases include automated decisionmaking, manufacturing control, robotics, automated design, automated programming and others. 
 
-You describe the problem in Python language formalism in form of functions and methods that model some business process - these methods modify the state of the world. By defining the exit criteria of entropy-controlled context you ask the system to reach the goal state by applying available functions and methods as many times as needed. `ordered` will automatically decide which objects available in memory to use with each call.
+You describe the world as Python objects and state-modifying methods. Defining an entropy-controlled context allows you to set up a goal for the system to satisfy all constraints and reach the desired state. 
+
+To define constraints you add `assert` statements in your code and inside ordered context. Then you add a function-calling loop `while <condition>: random.choice()(random.choice())`. To exit the context the engine will have to call correct functions with correct arguments and end up with a staisfying state (see examples below). 
 
 ## Requirements
 
@@ -62,11 +66,8 @@ You describe the problem in Python language formalism in form of functions and m
 $ pip install ordered
 ```
 
-Having pypy3 installed on the system is recommended for performance and will be automatically detected and used.
-
 ## Entropy Context Objects
 
-Ordered contexts are environments of controlled entropy. Contexts allow you to control which portions of the program will be guaranteed to exit with minimum state-changing steps. Raising any exceptions is also avoided by providing the correct "anti-random" `choice()` results. 
 
 ```python
 # ... normal python code
