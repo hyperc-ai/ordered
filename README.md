@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/hyperc-ai/ordered.svg?branch=main)](https://travis-ci.com/hyperc-ai/ordered)
 [![PyPI version](https://badge.fury.io/py/ordered.svg)](https://badge.fury.io/py/ordered)
-[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+[![PyPI os](https://img.shields.io/badge/os-linux-blue)](https://img.shields.io/badge/os-linux-blue)
 [![PyPI status](https://img.shields.io/pypi/status/ordered.svg)](https://pypi.python.org/pypi/ordered/)
 
 ![Twitter Follow](https://img.shields.io/twitter/follow/hyperc_ai?style=social)
